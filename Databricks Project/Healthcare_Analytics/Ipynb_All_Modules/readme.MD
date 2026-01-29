@@ -1,27 +1,25 @@
 # 🏥 Databricks Lakehouse ML Project – End-to-End Readmission Prediction
 
-This repository contains an **end-to-end Databricks Lakehouse project** that demonstrates how to design, build, and operationalize a **real-world analytics + machine learning solution** using modern data engineering and ML best practices.
+This repository contains an **end-to-end Databricks Lakehouse project** that demonstrates how to design, build, and operationalize a **real-world analytics + machine learning solution** for **hospital readmission prediction**.
 
-The project is structured into **six modular notebooks**, each representing a logical layer in a production-grade data platform:
+The project follows a **modern Lakehouse architecture** and has been **enhanced to support future predictions (risk scoring)**, making it suitable for **proactive decision-making**, not just historical analysis.
 
 ```
-Configuration → Bronze → Silver → Gold → ML Model → Dashboard Queries
+Configuration → Bronze → Silver → Gold → ML Model (Training + Future Scoring) → Dashboards (Historical + Predictive)
 ```
-
-This design closely follows **industry-standard Lakehouse architecture**, ensuring scalability, governance, reproducibility, and business usability.
 
 ---
 
 ## 📂 Repository Structure
 
-| Notebook                     | Purpose                                          |
-| ---------------------------- | ------------------------------------------------ |
-| `1. Configuration.ipynb`     | Environment setup and shared configurations      |
-| `2. Bronze.ipynb`            | Raw data ingestion layer                         |
-| `3. Silver.ipynb`            | Cleaned and validated data layer                 |
-| `4. Gold.ipynb`              | Business aggregates & ML-ready datasets          |
-| `5. ML Model.ipynb`          | Feature engineering, model training & evaluation |
-| `6. Dashboard Queries.ipynb` | SQL analytics for dashboards & insights          |
+| Notebook                     | Purpose                                                  |
+| ---------------------------- | -------------------------------------------------------- |
+| `1. Configuration.ipynb`     | Environment setup and shared configurations              |
+| `2. Bronze.ipynb`            | Raw data ingestion layer                                 |
+| `3. Silver.ipynb`            | Cleaned and validated data layer                         |
+| `4. Gold.ipynb`              | Business aggregates & ML-ready datasets                  |
+| `5. ML Model.ipynb`          | Model training, evaluation **and future risk scoring**   |
+| `6. Dashboard Queries.ipynb` | SQL analytics for **historical + predictive dashboards** |
 
 ---
 
@@ -29,18 +27,17 @@ This design closely follows **industry-standard Lakehouse architecture**, ensuri
 
 ### 🎯 Objective
 
-Establish a **single source of truth for environment configuration** and ensure consistency across all downstream notebooks.
+Provide a **centralized configuration layer** for catalogs, schemas, and reusable variables across the project.
 
 ### 🔑 Key Responsibilities
 
 * Select catalog and schema
-* Define reusable variables (paths, table names)
-* Centralize project configuration
-* Validate workspace context
+* Define table names and reusable paths
+* Validate execution context
 
 ### ✅ Outcome
 
-A clean, reusable setup that avoids hardcoding and supports portability across environments.
+Consistent execution environment across all layers.
 
 ---
 
@@ -48,22 +45,18 @@ A clean, reusable setup that avoids hardcoding and supports portability across e
 
 ### 🎯 Objective
 
-Ingest raw source data into the Lakehouse **without modifying business meaning**.
+Ingest raw source data into the Lakehouse **without altering business meaning**.
 
 ### 🔑 Key Responsibilities
 
-* Read raw source files
-* Append ingestion metadata (timestamps, source info)
-* Write Delta tables in append/overwrite mode
-* Enable auditability and traceability
+* Read raw source data
+* Append ingestion metadata
+* Write Delta tables
+* Maintain auditability
 
 ### 🧠 Design Principle
 
-> *Bronze data is immutable, raw, and reproducible.*
-
-### ✅ Outcome
-
-A reliable raw data foundation suitable for replay and debugging.
+> Bronze data is raw, immutable, and replayable.
 
 ---
 
@@ -71,134 +64,145 @@ A reliable raw data foundation suitable for replay and debugging.
 
 ### 🎯 Objective
 
-Transform raw data into **analytics-ready, trustworthy datasets**.
+Prepare **high-quality, trusted datasets** for analytics and machine learning.
 
 ### 🔑 Key Responsibilities
 
-* Data type casting
+* Data type standardization
 * Null handling and validation
-* Deduplication logic
+* Deduplication
 * Business rule enforcement
-* Feature preparation (derived columns)
+* Feature-ready transformations
 
 ### 🧠 Design Principle
 
-> *Silver data represents the single version of truth for analytics.*
-
-### ✅ Outcome
-
-High-quality datasets suitable for BI, ML, and downstream consumption.
+> Silver data represents the analytical source of truth.
 
 ---
 
-## 4️⃣ Gold Layer – Business Aggregates
+## 4️⃣ Gold Layer – Business & ML-Ready Data
 
 ### 🎯 Objective
 
-Create **consumption-ready datasets** for analytics, dashboards, and machine learning.
+Create **consumption-ready datasets** for reporting and ML.
 
 ### 🔑 Key Responsibilities
 
-* Business-level aggregations
-* Metric calculations (counts, rates, revenue, etc.)
-* ML-friendly summary tables
-* Optimized schema for fast querying
+* Business aggregations
+* Metric calculations
+* ML-friendly feature tables
+* Optimized schemas for performance
 
 ### 🧠 Design Principle
 
-> *Gold data answers business questions directly.*
-
-### ✅ Outcome
-
-Curated datasets optimized for performance and usability.
+> Gold data directly answers business questions.
 
 ---
 
-## 5️⃣ ML Model Notebook – Predictive Analytics
+## 5️⃣ ML Model Notebook – Training & Future Risk Prediction (Updated)
 
 ### 🎯 Objective
 
-Build and evaluate a **machine learning model for readmission prediction** using Spark ML and MLflow.
+Build, evaluate, and **apply machine learning models to both historical and future data**.
 
 ### 🔑 Key Responsibilities
 
 * Feature engineering using Spark ML Pipelines
-* Train-test split
+* Train/Test split
 * Model training (Random Forest, Gradient Boosted Trees)
-* Evaluation using AUC, accuracy, precision, recall
-* Model comparison and selection
+* Model evaluation using AUC, accuracy, precision, recall
 * MLflow experiment tracking
+* **Risk score inference using prediction probabilities**
+* **Scoring future/unseen records**
 
-### 🧠 Key ML Concepts Applied
+### 🧠 Key Enhancements
 
-* Why AUC is preferred over accuracy for imbalanced data
-* Feature vectorization using `VectorAssembler`
-* Handling categorical variables with `StringIndexer` & `OneHotEncoder`
-* Model interpretability through metrics and plots
+* Extracted `risk_score` from model probability (`P(label = 1)`)
+* Categorized risk levels (High / Medium / Low)
+* Persisted prediction outputs as Gold tables
 
 ### ✅ Outcome
 
-A validated, explainable ML model with experiment history stored in MLflow.
+A **production-ready predictive model** capable of scoring new patient encounters and generating actionable risk insights.
 
 ---
 
-## 6️⃣ Dashboard Queries – SQL Analytics
+## 6️⃣ Dashboard Queries – Historical & Predictive Insights (Updated)
 
 ### 🎯 Objective
 
-Translate curated data into **actionable business insights**.
+Expose **both historical metrics and future ML predictions** through SQL analytics and dashboards.
 
 ### 🔑 Key Responsibilities
 
-* Write analytical SQL queries
-* Compute KPIs and trends
-* Support dashboard visualizations
-* Enable filters and drill-downs
+* Historical KPIs (readmission trends, volumes)
+* Predictive KPIs (risk score distributions)
+* High-risk patient identification
+* SQL queries for dashboards
+* Support filters and drill-downs
 
-### 🧠 Design Principle
+### 🧠 Example Predictive Insights
 
-> *SQL is the final mile between data and decision-making.*
+* Top high-risk patients
+* Risk distribution by admission type
+* Predicted vs actual readmissions
+* Risk trends over time
 
 ### ✅ Outcome
 
-SQL-ready datasets powering dashboards and reports for stakeholders.
+Dashboards that support **proactive clinical and operational decision-making**.
 
 ---
 
-## 🧠 Architecture Summary
+## 🧠 End-to-End Architecture Summary
 
 ```
 Raw Data
    ↓
 Bronze (Raw Delta)
    ↓
-Silver (Clean & Validated)
+Silver (Cleaned & Validated)
    ↓
-Gold (Aggregated & ML-Ready)
+Gold (Aggregates & ML Features)
    ↓
-ML Models + Dashboards
+ML Models (Training + Risk Scoring)
+   ↓
+Dashboards (Historical + Predictive)
 ```
-
-This architecture ensures:
-
-* Scalability
-* Reproducibility
-* Governance
-* Business alignment
 
 ---
 
-## 🚀 Key Skills Demonstrated
+## 🚀 How Machine Learning Enhances This Project
+
+* Moves analytics from descriptive → predictive
+* Identifies high-risk patients before readmission occurs
+* Generates probabilistic risk scores instead of binary outcomes
+* Enables prioritization and early intervention
+* Integrates seamlessly with Lakehouse architecture
+
+---
+
+## 📌 Key Skills Demonstrated
 
 * Databricks Lakehouse Architecture
-* Delta Lake best practices
+* Delta Lake & Spark SQL
 * PySpark Data Engineering
 * Spark ML Pipelines
 * MLflow experiment tracking
-* SQL analytics & dashboard readiness
-* End-to-end ML project design
+* Predictive analytics & risk scoring
+* SQL dashboards with ML insights
 
 ---
 
-✨ *Built with Databricks, Spark, Delta Lake, and MLflow*
+## ✨ Final Notes
 
+This project now represents a **full decision intelligence system**:
+
+* Historical reporting
+* Predictive modeling
+* Risk-based insights
+* Dashboard-driven consumption
+
+---
+
+✨ *Built with Databricks, Spark, Delta Lake, MLflow, and SQL Analytics*
